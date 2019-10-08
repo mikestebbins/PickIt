@@ -224,7 +224,7 @@ boolean tracePath (int inputSegmentArray[])  {
   IntList segments;
   segments = new IntList();
   for (int i = 0; i < inputSegmentArray.length; i++)  {
-    segments.append(inputSegmentArray[i];
+    segments.append(inputSegmentArray[i]);
   }
   
   int segmentsLength = segments.size();
