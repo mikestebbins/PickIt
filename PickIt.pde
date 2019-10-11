@@ -33,6 +33,7 @@ int[] activeNodes = new int[36];
 int[] freeNodes = new int[36];
 boolean[] onOrOff = new boolean[18];
 boolean proceed = false;
+IntList uniqueNodes;
 
 int X13 = thisWide/2 - segLength/2;
 int X14 = thisWide/2 + segLength/2;
@@ -111,7 +112,7 @@ int[][] segmentNeighbors = {
 
 void setup() {
   size(1280, 720);
-  //randomSeed(0);
+  randomSeed(0);
   strokeWeight(thick);
   strokeCap(ROUND);
   stroke(255);
@@ -132,9 +133,6 @@ void draw() {
   while (proceed == false)  {
     tryMovingOne();
   }
-  
-  //findActiveNodes();
-  //findfreeNodes();
   drawSegments();
   delay(1000);
   println("-------------------------------------");
@@ -142,7 +140,6 @@ void draw() {
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
-
 void findActiveSegments()  {
   for (int j = 0; j < activeSegments.length; j++)  {
     activeSegments[j] = 0;
@@ -155,6 +152,36 @@ void findActiveSegments()  {
    }
  }
  //printAnArray("activeSegments = ",activeSegments);
+}
+
+//------------------------------------------------------------------------
+void findUniqueActiveNodes()  {
+  uniqueNodes = new IntList();
+  for (int i = 0; i < activeNodes.length; i++ )  {
+    if (activeNodes[i] > 0)  {
+      uniqueNodes.append(activeNodes[i]);
+    }
+  }
+  uniqueNodes.sort();
+  for (int i = 0; i < (uniqueNodes.size()-1); i++ )  {
+    if (uniqueNodes.get(i) == uniqueNodes.get(i+1))  {
+      uniqueNodes.remove(i);
+    }
+  }
+  println();
+  print("uniqueNodes = ");
+  for (int i = 0; i < uniqueNodes.size(); i++)  {
+    print(uniqueNodes.get(i));
+    print(", ");
+  }
+  println();
+  
+  if (uniqueNodes.size() > 6)  {
+    proceed = false;
+  }
+  else  {
+    proceed = true;
+  }
 }
 
 //------------------------------------------------------------------------
@@ -210,88 +237,62 @@ boolean tryMovingOne()  {
     }
   }
   
-  printAnArray("tempOnlyActiveSeg = ",tempOnlyActiveSegments);
-    
+  printAnArray("tempOnlyActiveSeg = ",tempOnlyActiveSegments); 
   boolean result = connectedOrNot(tempOnlyActiveSegments);
   return result;
 }
-//------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------
-boolean tracePath (int inputSegmentArray[])  {
-  boolean result = true;
-  IntList segments;
-  segments = new IntList();
-  for (int i = 0; i < inputSegmentArray.length; i++)  {
-    segments.append(inputSegmentArray[i]);
-  }
-  
-  int segmentsLength = segments.size();
-  for (int i = 0; i < segmentsLength; i++) {
-    
-  }
-  return result;
-}
-
-//--------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------
-//--------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------
 boolean connectedOrNot(int inputSegmentArray[])  {
-  boolean keepGoing = true;
-  //set the result to true, we'll make it false if any one of these doesn't find a neighbor match in the input array
+  //boolean keepGoing = true;
+  ////set the result to true, we'll make it false if any one of these doesn't find a neighbor match in the input array
   boolean result = true;
-
-  // for each member of the input array
-  for (int i = 0; i < inputSegmentArray.length; i++)  {
-    if (keepGoing == false)  {
-      break;
-    }
-  else  {
+  //// for each member of the input array
+  //for (int i = 0; i < inputSegmentArray.length; i++)  {
+  //  if (keepGoing == false)  {
+  //    break;
+  //  }
+  //else  {
   
-  //first build an array of every member of the input array except the one we're iterating on above
-  int[] restOfArray = {};
-    for (int j = 0; j < inputSegmentArray.length; j++)  {
-      if (inputSegmentArray[j] != inputSegmentArray[i])  {
-        restOfArray = append(restOfArray,inputSegmentArray[j]);
-      }
-    }
-    //printAnArray("restOfArray = ",restOfArray);
-    // then, find all the potential neighbors of this member of the input array
-    int[] tempNeighbors = segmentNeighbors[(inputSegmentArray[i] - 1)];
-    //printAnArray("tempNeighbors = ",tempNeighbors);
+  ////first build an array of every member of the input array except the one we're iterating on above
+  //int[] restOfArray = {};
+  //  for (int j = 0; j < inputSegmentArray.length; j++)  {
+  //    if (inputSegmentArray[j] != inputSegmentArray[i])  {
+  //      restOfArray = append(restOfArray,inputSegmentArray[j]);
+  //    }
+  //  }
+  //  //printAnArray("restOfArray = ",restOfArray);
+  //  // then, find all the potential neighbors of this member of the input array
+  //  int[] tempNeighbors = segmentNeighbors[(inputSegmentArray[i] - 1)];
+  //  //printAnArray("tempNeighbors = ",tempNeighbors);
     
-    // go through each member of the this inputarray values, neighbors, and see if matches any values in the other member array
-    // if there is a match, continue on. if there isn't a match, then stop (you've found an "island" segment
-    int matches = 0;
-    for (int k = 0; k < tempNeighbors.length; k++)  {
-      for (int l = 0; l < restOfArray.length; l++)  {
-        //println("matches = ",matches);
-        if (tempNeighbors[k] == restOfArray[l])  {
-          matches++;   
-        }
-      }
-    }
-    println();
-    println("matches = ",matches);
-    if (matches == 0)  {
-      result = false;
-      keepGoing = false;
-      println();
-      println("keepGoing = ",keepGoing);
-    }
-
-  println();
-  println("result = ",result);
-  }
-  if (result == true)  {
-   proceed = true; 
-   generateOnsAndOffs(inputSegmentArray);
-  }
-  }
-  return result;
+  //  // go through each member of the this inputarray values, neighbors, and see if matches any values in the other member array
+  //  // if there is a match, continue on. if there isn't a match, then stop (you've found an "island" segment
+  //  int matches = 0;
+  //  for (int k = 0; k < tempNeighbors.length; k++)  {
+  //    for (int l = 0; l < restOfArray.length; l++)  {
+  //      if (tempNeighbors[k] == restOfArray[l])  {
+  //        matches++;   
+  //      }
+  //    }
+  //  }
+  //  }
+    //if (result == true)  {
+    // proceed = true; 
+     findActiveNodes();
+     findUniqueActiveNodes();
+     
+     if (uniqueNodes.size() < 7)  {
+       generateOnsAndOffs(inputSegmentArray);
+       proceed = true;
+     }
+     else  {
+       proceed = false;
+       result = false;
+     }
+   //}
+ //}
+ return result;
 }
 
 //------------------------------------------------------------------------
@@ -303,21 +304,6 @@ void generateOnsAndOffs (int[] input)  {
     for (int j = 0; j < input.length; j++)  {
       int temp = (input[j]) - 1;
       onOrOff[temp] = boolean (1);
-    }
-  }
-}
-
-//------------------------------------------------------------------------
-void findNeighbors()  {
-  for (int j = 0; j < noNeighbors.length; j++)  {
-    noNeighbors[j] = 0;
-  }
-  for (int i = 0; i < activeSegments.length; i++)  {
-    if (activeSegments[i] > 0)  {
-      int[] maybeNeighbors = segmentNeighbors[i+1];
-      for (int k = 1; k < maybeNeighbors.length; k++)  {
-
-      }
     }
   }
 }
@@ -340,33 +326,7 @@ void findActiveNodes()  {
       tempIndex++;
    }
  }
- printAnArray("activeNodes",activeNodes);
-}
-
-//------------------------------------------------------------------------
-void findfreeNodes()  {
- activeNodes = reverse(sort(activeNodes)); 
- printAnArray("Sorted activeNodes = ",activeNodes);
- 
- for (int j = 0; j < freeNodes.length; j++)  {
-    freeNodes[j] = 0;
-  }
-    
- int[] duplicates = {}; 
- int tempIndex = 0;
- for (int i = 0; i < (activeNodes.length - 1); i++)  {
-   if (activeNodes[i] != activeNodes[i+1])  {
-     freeNodes[tempIndex] = activeNodes[i];
-     tempIndex++;
-   }
-   else  {
-     int tempLength = duplicates.length + 1;
-     duplicates = expand(duplicates, tempLength); // new size
-     duplicates[(duplicates.length)-1] = activeNodes[i];
-    }
-   }
- printAnArray("freeNodes = ",freeNodes);
- printAnArray("duplicateNodes = ",duplicates);
+ printAnArray("activeNodes = ",activeNodes);
 }
 
 //------------------------------------------------------------------------
