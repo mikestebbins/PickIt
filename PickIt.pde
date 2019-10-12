@@ -156,18 +156,23 @@ void findActiveSegments()  {
 
 //------------------------------------------------------------------------
 void findUniqueActiveNodes()  {
+  
   uniqueNodes = new IntList();
+  
   for (int i = 0; i < activeNodes.length; i++ )  {
     if (activeNodes[i] > 0)  {
       uniqueNodes.append(activeNodes[i]);
     }
   }
+  
   uniqueNodes.sort();
+  
   for (int i = 0; i < (uniqueNodes.size()-1); i++ )  {
     if (uniqueNodes.get(i) == uniqueNodes.get(i+1))  {
       uniqueNodes.remove(i);
     }
   }
+  
   println();
   print("uniqueNodes = ");
   for (int i = 0; i < uniqueNodes.size(); i++)  {
