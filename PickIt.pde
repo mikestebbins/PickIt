@@ -113,6 +113,7 @@ int[][] segmentNeighbors = {
 
 void setup() {
   size(1280, 720);
+  //size(1920, 1080);
   //randomSeed(0);
   strokeWeight(thick);
   strokeCap(ROUND);
@@ -135,7 +136,7 @@ void draw() {
     tryMovingOne();
   }
   drawSegments();
-  delay(1000);
+  delay(300);
   println("-------------------------------------");
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -152,7 +153,7 @@ void findActiveSegments()  {
      tempIndex++;
    }
  }
- //printAnArray("activeSegments = ",activeSegments);
+ printAnArray("activeSegments = ",activeSegments);
 }
 
 //------------------------------------------------------------------------
@@ -231,6 +232,7 @@ void tryMovingOne()  {
   // RANDOMLY CHOOSE ONE OF THE ACTIVE SEGMENTS TO MOVE
   int segmentToMoveFrom = onlyActiveSegments[(int)random(onlyActiveSegments.length)];
   
+  println();
   println("segment to move from = ", segmentToMoveFrom);
   
   // RANDOMLY CHOOSE ONE OF THE INACTIVE LOCATIONS TO MOVE IT TO
@@ -246,20 +248,45 @@ void tryMovingOne()  {
       tempOnlyActiveSegments = append(tempOnlyActiveSegments,onlyActiveSegments[i]);
     }
   }
-  
   printAnArray("tempOnlyActiveSeg = ",tempOnlyActiveSegments); 
 
-  findActiveNodes();
-  
+  // -------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------
+  // I'm not passing the tempOnlyActiveSegments into the findActiveNodes...,need to figure this out
+  findActiveNodes(tempOnlyActiveSegments);
   findUniqueActiveNodes();
+  // -------------------------------------------------------------------------------
+  // -------------------------------------------------------------------------------  
   
   if (uniqueNodes2.size() < 7)  {
-    generateOnsAndOffs(tempOnlyActiveSegments);
     proceed = true;
+    generateOnsAndOffs(tempOnlyActiveSegments);
+
     }
   else  {
     proceed = false;
   }
+}
+
+//------------------------------------------------------------------------
+void findActiveNodes(int tempOnlyActiveSegments[])  {
+    for (int j = 0; j < activeNodes.length; j++)  {
+    activeNodes[j] = 0;
+  }
+
+  int tempIndex = 0;
+  for (int i = 0; i < tempOnlyActiveSegments.length; i++)  {
+    if (tempOnlyActiveSegments[i] > 0)  {
+      int activeSegmentNumber = tempOnlyActiveSegments[i] - 1;
+      int tempNode1 = segmentNodes[activeSegmentNumber][1];
+      int tempNode2 = segmentNodes[activeSegmentNumber][2]; 
+      activeNodes[tempIndex] = tempNode1;
+      activeNodes[(tempIndex + 1)] = tempNode2;
+      tempIndex++;
+      tempIndex++;
+   }
+ }
+ printAnArray("activeNodes = ",activeNodes);
 }
 
 //------------------------------------------------------------------------
@@ -291,27 +318,6 @@ void generateOnsAndOffs (int[] input)  {
       onOrOff[temp] = boolean (1);
     }
   }
-}
-
-//------------------------------------------------------------------------
-void findActiveNodes()  {
-    for (int j = 0; j < activeNodes.length; j++)  {
-    activeNodes[j] = 0;
-  }
-
-  int tempIndex = 0;
-  for (int i = 0; i < activeSegments.length; i++)  {
-    if (activeSegments[i] > 0)  {
-      int activeSegment = activeSegments[i] - 1;
-      int tempNode1 = segmentNodes[activeSegment][1];
-      int tempNode2 = segmentNodes[activeSegment][2]; 
-      activeNodes[tempIndex] = tempNode1;
-      activeNodes[(tempIndex + 1)] = tempNode2;
-      tempIndex++;
-      tempIndex++;
-   }
- }
- printAnArray("activeNodes = ",activeNodes);
 }
 
 //------------------------------------------------------------------------
