@@ -33,6 +33,7 @@ int[] activeNodes = new int[36];
 int[] freeNodes = new int[36];
 boolean[] onOrOff = new boolean[18];
 boolean proceed = false;
+boolean firstRun = true;
 IntList uniqueNodes;
 IntList uniqueNodes2;
 
@@ -113,6 +114,7 @@ int[][] segmentNeighbors = {
 
 void setup() {
   size(1280, 720);
+  background(0);
   //size(1920, 1080);
   //randomSeed(0);
   strokeWeight(thick);
@@ -128,15 +130,22 @@ void setup() {
 
 void draw() {
   background(0);
-  proceed = false;
-  //generateRandoms(); 
-  findActiveSegments();
-  findInActiveSegments();
-  while (proceed == false)  {
-    tryMovingOne();
+  if (firstRun == false)  {
+    proceed = false;
+    //generateRandoms(); 
+    findActiveSegments();
+    findInActiveSegments();
+    while (proceed == false)  {
+      tryMovingOne();
+    }
+  }
+  else  {
+    firstRun = false;
   }
   drawSegments();
-  delay(300);
+  delay(8000);
+  // Saves each frame as line-000001.png, line-000002.png, etc.
+  saveFrame("number-######.png");
   println("-------------------------------------");
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -250,14 +259,9 @@ void tryMovingOne()  {
   }
   printAnArray("tempOnlyActiveSeg = ",tempOnlyActiveSegments); 
 
-  // -------------------------------------------------------------------------------
-  // -------------------------------------------------------------------------------
-  // I'm not passing the tempOnlyActiveSegments into the findActiveNodes...,need to figure this out
   findActiveNodes(tempOnlyActiveSegments);
   findUniqueActiveNodes();
-  // -------------------------------------------------------------------------------
-  // -------------------------------------------------------------------------------  
-  
+
   if (uniqueNodes2.size() < 7)  {
     proceed = true;
     generateOnsAndOffs(tempOnlyActiveSegments);
@@ -288,24 +292,6 @@ void findActiveNodes(int tempOnlyActiveSegments[])  {
  }
  printAnArray("activeNodes = ",activeNodes);
 }
-
-//------------------------------------------------------------------------
-//boolean connectedOrNot(int inputSegmentArray[])  {
-//  boolean result = true;
-//  findActiveNodes();
-//  findUniqueActiveNodes();
-  
-//  if (uniqueNodes2.size() < 7)  {
-//    generateOnsAndOffs(inputSegmentArray);
-//    proceed = true;
-//    result = true;
-//    }
-//  else  {
-//    proceed = false;
-//    result = false;
-//  }
-// return result;
-//}
 
 //------------------------------------------------------------------------
 void generateOnsAndOffs (int[] input)  {
@@ -340,8 +326,8 @@ void generateRandoms() {
 //------------------------------------------------------------------------
 void initialize() {
   for (int i = 1; i < (onOrOff.length + 1); i++) {
-    //if ((i==0) || (i==1) || (i==2) || (i==3) || (i==4)) {
-    if ((i==3) || (i==1) || (i==2) || (i==12) || (i==16)) {
+    if ((i==1) || (i==2) || (i==3) || (i==4) || (i==5)) {
+    //if ((i==3) || (i==1) || (i==2) || (i==12) || (i==16)) {
       onOrOff[i-1] = boolean (1);
     }
     else {
