@@ -7,6 +7,10 @@
 // except for a box (4 sticks) and 1 other stick floating somewhere. So, with 6 or fewer unique nodes, the algo then checks to see if any one 
 // stick has no connections. If all successful, it draws that new configuration, and then repeats.
 //
+// TODO:
+// - Figure out how to add a transition state, where the stick moving disappears at it's current spot and simultaneously slowly appears at the new
+// - make that a sub-loop in draw, and change the On/Off state to include a transition level with those two segments
+//
 // Below, segment (sticks) as letters, and node numbers at each end:
 //      5 f  6 g  7 h  8 
 //      m    n    p    q
@@ -22,9 +26,10 @@
 //      -9-  -10-  -11- 
 
 // User Input stuff
+boolean savePics = false;
 int segLength = 126;
 int spc = 24;
-//int thisWide = 1280;
+//int thisWide = 1280;  // also need to set equivalent values below
 int thisWide = 720;
 int thisHigh = 720;
 int thick = 16;
@@ -123,7 +128,7 @@ void setup() {
   //randomSeed(0);
   strokeWeight(thick);
   strokeCap(ROUND);
-  stroke(255);
+  stroke(255, 255, 255, 100);
   initialize();
 }
 
@@ -143,7 +148,9 @@ void draw() {
   }
   drawSegments();
   delay(800);
-  saveFrame("number-######.png");
+  if (savePics == true)  {
+    saveFrame("number-######.png");
+  }
   println("-------------------------------------");
 }
 //----------------------------------------------------------------------------------------------------------------------
