@@ -1,31 +1,35 @@
+// 2019-10-13, Mike Stebbins, mstebbins.com
+//
+// Just like the game PickIt (from Discovery Toys, sometime in the late 80's), you have 5 sticks in a configuration. You can move only move stick 
+// to a new position, and they all must remain connected. This starts at a straight horizontal line, then looks for a stick with a free end and 
+// places it at a node where it can go, while fulfilling the criteria. 
+// The first check is the number of unique nodes over all the segments. Most of the time 6 or fewer unique nodes means that they are all connected,
+// except for a box (4 sticks) and 1 other stick floating somewhere. So, with 6 or fewer unique nodes, the algo then checks to see if any one 
+// stick has no connections. If all successful, it draws that new configuration, and then repeats.
+//
+// Below, segment (sticks) as letters, and node numbers at each end:
 //      5 f  6 g  7 h  8 
 //      m    n    p    q
 // 1 a  2 b 13 c 14 d  3 e  4
 //      r    s    t    u
 //      9 j 10 k 11 l 12
 //
+// Below, each segment by it's number:
 //      -6-   -7-   -8-
 //     12   13   14   15
 //  -1-  -2-  -3-  -4-  -5- 
 //     16   17   18   19
 //      -9-  -10-  -11- 
-//
-// REWRITE MY 5 LINE SUMMARY UP HERE, ONCE IT ACTUALLY WORKS ;)
-//
-// for all the active segments, build an array of all the nodes at each segment end
-// sort and reverse the array
-// find nodes that are free
-// find active segments with the nodes that are standing alone
-// randomly select one of the active segments
-// remove that segment from the list of active segments
-// re-generate the list of nodes in use by active segments
 
-int segLength = 250;
-int spc = 40;
-int thisWide = 1280;
+// User Input stuff
+int segLength = 126;
+int spc = 24;
+//int thisWide = 1280;
+int thisWide = 720;
 int thisHigh = 720;
-int thick = 24;
+int thick = 16;
 
+// Set-up some variables
 int[] activeSegments = new int[18];
 int[] inActiveSegments = new int[18];
 int[] noNeighbors = new int[18];
@@ -37,6 +41,7 @@ boolean firstRun = true;
 IntList uniqueNodes;
 IntList uniqueNodes2;
 
+// Calculate the XY location of each stick's end nodes
 int X13 = thisWide/2 - segLength/2;
 int X14 = thisWide/2 + segLength/2;
 int X2  = X13 - segLength;
@@ -66,6 +71,7 @@ int Y10 = Y9;
 int Y11 = Y9;
 int Y12 = Y9;
 
+// each array in the array is {segment number, node A, node B}
 int[][] segmentNodes = { 
   {1, 1, 2}, 
   {2, 2, 13}, 
@@ -86,7 +92,8 @@ int[][] segmentNodes = {
   {17, 13, 10},
   {18, 14, 11},
   {19, 3, 12} } ;
-  
+
+// neighboring segments for each segment, {segment in questions, neighbor A, neighbor B, neighbor C, ....}  
 int[][] segmentNeighbors = { 
   { 1,  2, 12, 16}, 
   { 2,  1, 12, 16, 13, 17, 3},
@@ -109,30 +116,22 @@ int[][] segmentNeighbors = {
   {19, 11,  4,  5, 15}      };
   
 //----------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------
-
 void setup() {
-  size(1280, 720);
+  //size(1280, 720);
+  size(720, 720);
   background(0);
-  //size(1920, 1080);
   //randomSeed(0);
   strokeWeight(thick);
   strokeCap(ROUND);
   stroke(255);
   initialize();
-  //noLoop();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------
-
 void draw() {
   background(0);
   if (firstRun == false)  {
     proceed = false;
-    //generateRandoms(); 
     findActiveSegments();
     findInActiveSegments();
     while (proceed == false)  {
@@ -144,12 +143,9 @@ void draw() {
   }
   drawSegments();
   delay(800);
-  // Saves each frame as line-000001.png, line-000002.png, etc.
   saveFrame("number-######.png");
   println("-------------------------------------");
 }
-//----------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------
 void findActiveSegments()  {
   for (int j = 0; j < activeSegments.length; j++)  {
@@ -399,8 +395,6 @@ void initialize() {
 //------------------------------------------------------------------------
 boolean randomBool() {
   return random(1) > .5;
-//  return random(1) > .5;
-// TODO: return to .5 above, to make truly random
 }
 
 //------------------------------------------------------------------------
