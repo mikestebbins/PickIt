@@ -143,7 +143,7 @@ void draw() {
     firstRun = false;
   }
   drawSegments();
-  delay(8000);
+  delay(800);
   // Saves each frame as line-000001.png, line-000002.png, etc.
   saveFrame("number-######.png");
   println("-------------------------------------");
@@ -263,13 +263,73 @@ void tryMovingOne()  {
   findUniqueActiveNodes();
 
   if (uniqueNodes2.size() < 7)  {
-    proceed = true;
-    generateOnsAndOffs(tempOnlyActiveSegments);
-
+    if (connectedOrNot(tempOnlyActiveSegments) == true)  {
+      proceed = true;
+      generateOnsAndOffs(tempOnlyActiveSegments);
     }
+    else  {
+      proceed = false;
+    }
+  }
   else  {
     proceed = false;
   }
+}
+
+//------------------------------------------------------------------------
+boolean connectedOrNot(int inputSegmentArray[])  {
+  boolean keepGoing = true;
+  //set the result to true, we'll make it false if any one of these doesn't find a neighbor match in the input array
+  boolean result = true;
+
+  // for each member of the input array
+  for (int i = 0; i < inputSegmentArray.length; i++)  {
+    if (keepGoing == false)  {
+      break;
+    }
+  else  {
+  
+  //first build an array of every member of the input array except the one we're iterating on above
+  int[] restOfArray = {};
+    for (int j = 0; j < inputSegmentArray.length; j++)  {
+      if (inputSegmentArray[j] != inputSegmentArray[i])  {
+        restOfArray = append(restOfArray,inputSegmentArray[j]);
+      }
+    }
+    //printAnArray("restOfArray = ",restOfArray);
+    // then, find all the potential neighbors of this member of the input array
+    int[] tempNeighbors = segmentNeighbors[(inputSegmentArray[i] - 1)];
+    //printAnArray("tempNeighbors = ",tempNeighbors);
+    
+    // go through each member of the this inputarray values, neighbors, and see if matches any values in the other member array
+    // if there is a match, continue on. if there isn't a match, then stop (you've found an "island" segment
+    int matches = 0;
+    for (int k = 0; k < tempNeighbors.length; k++)  {
+      for (int l = 0; l < restOfArray.length; l++)  {
+        //println("matches = ",matches);
+        if (tempNeighbors[k] == restOfArray[l])  {
+          matches++;   
+        }
+      }
+    }
+    println();
+    println("matches = ",matches);
+    if (matches == 0)  {
+      result = false;
+      keepGoing = false;
+      println();
+      println("keepGoing = ",keepGoing);
+    }
+
+  println();
+  println("result = ",result);
+  }
+  if (result == true)  {
+   proceed = true; 
+   generateOnsAndOffs(inputSegmentArray);
+  }
+  }
+  return result;
 }
 
 //------------------------------------------------------------------------
