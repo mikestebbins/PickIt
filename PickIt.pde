@@ -27,22 +27,26 @@
 
 // User Input stuff
 boolean savePics = false;
-int segLength = 126;
-int spc = 24;
+
+int segLength = 128;
+int spc = 22;
 //int thisWide = 1280;  // also need to set equivalent values below
 int thisWide = 720;
 int thisHigh = 720;
-int thick = 16;
+int thick = 14;
 
 // Set-up some variables
+boolean currentlyTransitioning = false;
+boolean[] onOrOff = new boolean[18];
+boolean proceed = false;
+boolean firstRun = true;
 int[] activeSegments = new int[18];
 int[] inActiveSegments = new int[18];
 int[] noNeighbors = new int[18];
 int[] activeNodes = new int[36];
 int[] freeNodes = new int[36];
-boolean[] onOrOff = new boolean[18];
-boolean proceed = false;
-boolean firstRun = true;
+int moveFrom;
+int moveTo;
 IntList uniqueNodes;
 IntList uniqueNodes2;
 
@@ -128,8 +132,9 @@ void setup() {
   //randomSeed(0);
   strokeWeight(thick);
   strokeCap(ROUND);
-  stroke(255, 255, 255, 100);
+  stroke(255, 255, 255);
   initialize();
+  //noLoop();
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -146,13 +151,33 @@ void draw() {
   else  {
     firstRun = false;
   }
+  //if (currentlyTransitioning == false)  {
+  //  drawSegments();
+  //  delay(800);
+  //  currentlyTransitioning = true;
+  //}
+  //else  {
+  //  drawSegmentsTrans();
+  //  delay(10);
+  //}
   drawSegments();
-  delay(800);
+  delay(500);
+
   if (savePics == true)  {
     saveFrame("number-######.png");
   }
   println("-------------------------------------");
 }
+
+//----------------------------------------------------------------------------------------------------------------------
+void drawSegmentsTrans()  {
+  findActiveSegments();
+//TODO: WORK SOME MAGIC HERE
+// FIGURE OUT HOW TO GRAB ACTIVE SEGMENTS, AND MAKE TO/FROM TRANSPARENT TO VARYING DEGREES, THEN DRAW SEGMENTS
+}
+
+
+
 //----------------------------------------------------------------------------------------------------------------------
 void findActiveSegments()  {
   for (int j = 0; j < activeSegments.length; j++)  {
@@ -269,6 +294,8 @@ void tryMovingOne()  {
     if (connectedOrNot(tempOnlyActiveSegments) == true)  {
       proceed = true;
       generateOnsAndOffs(tempOnlyActiveSegments);
+      moveFrom = segmentToMoveFrom;
+      moveTo = segmentToMoveTo;
     }
     else  {
       proceed = false;
@@ -315,23 +342,23 @@ boolean connectedOrNot(int inputSegmentArray[])  {
         }
       }
     }
-    println();
-    println("matches = ",matches);
+    //println();
+    //println("matches = ",matches);
     if (matches == 0)  {
       result = false;
       keepGoing = false;
-      println();
-      println("keepGoing = ",keepGoing);
+      //println();
+      //println("keepGoing = ",keepGoing);
     }
 
-  println();
-  println("result = ",result);
+  //println();
+  //println("result = ",result);
   }
   if (result == true)  {
-   proceed = true; 
-   generateOnsAndOffs(inputSegmentArray);
+    proceed = true; 
+    generateOnsAndOffs(inputSegmentArray);
   }
-  }
+}
   return result;
 }
 
@@ -406,60 +433,138 @@ boolean randomBool() {
 
 //------------------------------------------------------------------------
 void drawSegments()  {
-  if (onOrOff[0] == true) {
-    drawA(); 
+  for (int j = 0; j < onOrOff.length; j++ )  {
+    println();
+    print(onOrOff[j]);
+    print(", ");
+  }  
+  
+  for (int i = 0; i < onOrOff.length; i++ )  {
+    if (onOrOff[i] == true)  {
+      int temp = i + 1;
+      drawLine(temp, 255);
+      println(temp);
+    }
   }
-  if (onOrOff[1] == true) { 
-    drawB(); 
-  }
-  if (onOrOff[2] == true) { 
-    drawC(); 
-  }
-  if (onOrOff[3] == true) { 
-    drawD();
-  }
-  if (onOrOff[4] == true) { 
-    drawE();
-  }
-  if (onOrOff[5] == true) { 
-    drawF();
-  }
-  if (onOrOff[6] == true) { 
-    drawG();
-  }
-  if (onOrOff[7] == true) {
-    drawH();
-  }
-  if (onOrOff[8] == true) {
-    drawJ();
-  }
-  if (onOrOff[9] == true) {
-    drawK();
-  }
-  if (onOrOff[10] == true) {
-    drawL();
-  }
-  if (onOrOff[11] == true) {
-    drawM();
-  }
-  if (onOrOff[12] == true) {
-    drawN();
-  }
-  if (onOrOff[13] == true) {
-    drawP();
-  }
-  if (onOrOff[14] == true) {
-    drawQ();
-  }
-  if (onOrOff[15] == true) {
-    drawR();
-  }
-  if (onOrOff[16] == true) {
-    drawS();
-  }
-  if (onOrOff[17] == true) {
-    drawT();
-  }
+}
+    
+  //if (onOrOff[0] == true) {
+  //  drawA(); 
+  //}
+  //if (onOrOff[1] == true) { 
+  //  drawB(); 
+  //}
+  //if (onOrOff[2] == true) { 
+  //  drawC(); 
+  //}
+  //if (onOrOff[3] == true) { 
+  //  drawD();
+  //}
+  //if (onOrOff[4] == true) { 
+  //  drawE();
+  //}
+  //if (onOrOff[5] == true) { 
+  //  drawF();
+  //}
+  //if (onOrOff[6] == true) { 
+  //  drawG();
+  //}
+  //if (onOrOff[7] == true) {
+  //  drawH();
+  //}
+  //if (onOrOff[8] == true) {
+  //  drawJ();
+  //}
+  //if (onOrOff[9] == true) {
+  //  drawK();
+  //}
+  //if (onOrOff[10] == true) {
+  //  drawL();
+  //}
+  //if (onOrOff[11] == true) {
+  //  drawM();
+  //}
+  //if (onOrOff[12] == true) {
+  //  drawN();
+  //}
+  //if (onOrOff[13] == true) {
+  //  drawP();
+  //}
+  //if (onOrOff[14] == true) {
+  //  drawQ();
+  //}
+  //if (onOrOff[15] == true) {
+  //  drawR();
+  //}
+  //if (onOrOff[16] == true) {
+  //  drawS();
+  //}
+  //if (onOrOff[17] == true) {
+  //  drawT();
+  //}
+
+//------------------------------------------------------------------------
+void drawLine(int segNumber, int opacity) {
+ //stroke(255,255,255,opacity);
+ switch(segNumber)  {
+   case 1:
+     line(X1+spc, Y1, X2-spc, Y2);
+     break;
+   case 2:
+     line(X2+spc, Y2, X13-spc, Y13);
+     break;
+   case 3:
+     line(X13+spc, Y13, X14-spc, Y14);
+     break;
+   case 4:
+     line(X14+spc, Y14, X3-spc, Y3);
+     break;     
+   case 5:
+     line(X3+spc, Y3, X4-spc, Y4);
+     break;     
+   case 6:
+     line(X5+spc, Y5, X6-spc, Y6);
+     break;     
+   case 7:
+     line(X6+spc, Y6, X7-spc, Y7);
+     break;     
+   case 8:
+     line(X7+spc, Y7, X8-spc, Y8);
+     break;    
+   case 9:
+     line(X9+spc, Y9, X10-spc, Y10);
+     break;     
+   case 10:
+     line(X10+spc, Y10, X11-spc, Y11);
+     break;     
+   case 11:
+     line(X11+spc, Y11, X12-spc, Y12);
+     break;     
+   case 12:
+     line(X2, Y2-spc, X5, Y5+spc);
+     break;     
+   case 13:
+     line(X13, Y13-spc, X6, Y6+spc);
+     break;     
+   case 14:
+     line(X14, Y14-spc, X7, Y7+spc);
+     break;     
+   case 15:
+     line(X3, Y3-spc, X8, Y8+spc);
+     break;     
+   case 16:
+     line(X2, Y2+spc, X9, Y9-spc);
+     break;     
+   case 17:
+     line(X13, Y13+spc, X10, Y10-spc);
+     break;     
+   case 18:
+     line(X14, Y14+spc, X11, Y11-spc);
+     break;     
+   case 19:
+     line(X3, Y3+spc, X12, Y12-spc);
+     break;     
+   }
 }
 
 //------------------------------------------------------------------------
